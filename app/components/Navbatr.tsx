@@ -34,9 +34,10 @@ export default function Navbar() {
 
                     {/* CTA Button */}
                     <div className="hidden md:block w-50">
-                        <button className="bg-sky-400 text-blue-900 px-4 py-2 rounded-lg font-semibold hover:bg-sky-300 transition">
+
+                        <Link href="/products" className="nav-link bg-sky-400 text-blue-900 px-4 py-2 rounded-lg font-semibold hover:bg-sky-300 transition">
                             Product
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>

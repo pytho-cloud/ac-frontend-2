@@ -1,125 +1,178 @@
 'use client'
-import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
 
-const products = [
-    { id: 1, name: "Samsung 1.5 Inverter AC", price: 38999, brand: "Samsung", type: "new", image: "/images/ac1.png" },
-    { id: 2, name: "LG 1 Ton Split AC", price: 29499, brand: "LG", type: "new", image: "/images/ac2.png" },
-    { id: 3, name: "Daikin 2 Ton Smart AC", price: 52999, brand: "Daikin", type: "refurbished", image: "/images/ac3.png" },
-    { id: 4, name: "Voltas Window AC", price: 24999, brand: "Voltas", type: "refurbished", image: "/images/ac4.png" },
-    { id: 5, name: "LG 1.5 Ton Inverter AC", price: 35999, brand: "LG", type: "new", image: "/images/ac2.png" },
-];
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import ProductSinglePage from "./[id]/page";
+
+type Product = {
+    id: number;
+    brand: string;
+    model_name: string;
+    condition: string;
+    ac_type: string;
+    price: number;
+    image?: string;
+};
 
 export default function ProductsPage() {
-    const [brand, setBrand] = useState("all");
-    const [type, setType] = useState("all");
-    const [maxPrice, setMaxPrice] = useState(60000);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [filters, setFilters] = useState<any>({});
+    const [brand, setBrand] = useState("");
+    const [model, setModel] = useState("");
+    const [condition, setCondition] = useState("");
+    const [acType, setAcType] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [show, setShow] = useState(false);
 
-    const filteredProducts = products.filter(p =>
-        (brand === "all" || p.brand === brand) &&
-        (type === "all" || p.type === type) &&
-        p.price <= maxPrice
-    );
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+    // Load filters dynamically
+    useEffect(() => {
+        fetch("http://127.0.0.1:8000/api/ac-filter-list/")
+            .then(res => res.json())
+            .then(data => setFilters(data))
+            .catch(err => console.error(err));
+    }, []);
+
+    // Load products with 2-second delay
+    useEffect(() => {
+        const params = new URLSearchParams();
+        if (brand) params.append("brand", brand);
+        if (model) params.append("model_name", model);
+        if (condition) params.append("condition", condition);
+        if (acType) params.append("ac_type", acType);
+
+        setLoading(true);
+
+        fetch(`http://127.0.0.1:8000/api/acs/?${params.toString()}`)
+            .then(res => res.json())
+            .then(data => {
+                // 2-second artificial delay
+                setTimeout(() => {
+                    setProducts(data);
+                    setLoading(false);
+                }, 2000);
+            })
+            .catch(err => {
+                console.error(err);
+                setLoading(false);
+            });
+    }, [brand, model, condition, acType]);
+
+    if (selectedProduct) {
+        return (
+            <ProductSinglePage
+                product={selectedProduct}
+                onBack={() => setSelectedProduct(null)}
+            />
+        );
+    }
 
     return (
-        <section className="py-16 bg-blue-50">
-            <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-[260px_1fr] gap-8">
 
-                {/* Sidebar */}
-                <div className="bg-white p-6 rounded-xl shadow h-fit sticky top-24">
-                    <h3 className="font-bold text-blue-900 mb-4">Filters</h3>
+        <section className="py-10 bg-blue-50">
+            <div className="max-w-7xl mx-auto grid grid-cols-[260px_1fr] gap-6 px-6">
+
+                {/* FILTERS */}
+                <div className="bg-white p-6 rounded-xl shadow space-y-6 sticky top-24 h-fit">
+                    <h3 className="text-xl font-bold text-blue-900">Filters</h3>
 
                     {/* Brand */}
-                    <div className="mb-6">
-                        <p className="font-semibold mb-2">Brand</p>
-                        {["all", "Samsung", "LG", "Daikin", "Voltas"].map(b => (
-                            <button
-                                key={b}
-                                onClick={() => setBrand(b)}
-                                className={`block w-full text-left px-3 py-2 rounded mb-1 text-sm
-                  ${brand === b ? "bg-blue-600 text-white" : "hover:bg-blue-100"}
-                `}
-                            >
-                                {b === "all" ? "All Brands" : b}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Type */}
-                    <div className="mb-6">
-                        <p className="font-semibold mb-2">Condition</p>
-                        {["all", "new", "refurbished"].map(t => (
-                            <button
-                                key={t}
-                                onClick={() => setType(t)}
-                                className={`block w-full text-left px-3 py-2 rounded mb-1 text-sm capitalize
-                  ${type === t ? "bg-green-600 text-white" : "hover:bg-green-100"}
-                `}
-                            >
-                                {t}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Price */}
                     <div>
-                        <p className="font-semibold mb-2">Max Price: ₹{maxPrice}</p>
-                        <input
-                            type="range"
-                            min={20000}
-                            max={60000}
-                            step={1000}
-                            value={maxPrice}
-                            onChange={(e) => setMaxPrice(Number(e.target.value))}
-                            className="w-full"
-                        />
+                        <p className="font-semibold mb-2">Brand</p>
+                        <div className="flex flex-wrap gap-2">
+                            {[""].concat(filters.brand || []).map((b: string, i: number) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setBrand(b)}
+                                    className={`px-3 py-1 rounded-full text-sm font-medium transition
+                  ${brand === b ? "bg-blue-600 text-white" : "bg-gray-100 hover:bg-blue-100"}`}
+                                >
+                                    {b || "All"}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Model */}
+                    <div>
+                        <p className="font-semibold mb-2">Model</p>
+                        <div className="flex flex-wrap gap-2">
+                            {[""].concat(filters.model_name || []).map((m: string, i: number) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setModel(m)}
+                                    className={`px-3 py-1 rounded-full text-sm font-medium transition
+                  ${model === m ? "bg-green-600 text-white" : "bg-gray-100 hover:bg-green-100"}`}
+                                >
+                                    {m || "All"}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Condition */}
+                    <div>
+                        <p className="font-semibold mb-2">Condition</p>
+                        <div className="flex flex-wrap gap-2">
+                            {[""].concat(filters.condition || []).map((c: string, i: number) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setCondition(c)}
+                                    className={`px-3 py-1 rounded-full text-sm font-medium transition
+                  ${condition === c ? "bg-yellow-600 text-white" : "bg-gray-100 hover:bg-yellow-100"}`}
+                                >
+                                    {c || "All"}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* AC Type */}
+                    <div>
+                        <p className="font-semibold mb-2">AC Type</p>
+                        <div className="flex flex-wrap gap-2">
+                            {[""].concat(filters.ac_type || []).map((a: string, i: number) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setAcType(a)}
+                                    className={`px-3 py-1 rounded-full text-sm font-medium transition
+                  ${acType === a ? "bg-purple-600 text-white" : "bg-gray-100 hover:bg-purple-100"}`}
+                                >
+                                    {a || "All"}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
-                {/* Products */}
+                {/* PRODUCTS */}
                 <div>
-                    <h1 className="text-3xl font-bold text-blue-900 mb-8">
-                        AC Products
-                    </h1>
+                    {loading && <p className="text-center text-blue-700 font-semibold mt-10">Loading products...</p>}
+                    {!loading && products.length === 0 && <p>No products found.</p>}
 
-                    {filteredProducts.length === 0 && (
-                        <p>No products found.</p>
-                    )}
-
-                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
-
-                        {filteredProducts.map(product => (
-                            <Link
-                                key={product.id}
-                                href={`/products/${product.id}`}
-                                className="bg-white p-5 rounded-xl shadow hover:shadow-xl transition hover:-translate-y-2"
+                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+                        {products.map(p => (
+                            <div
+                                key={p.id}
+                                onClick={() => setSelectedProduct(p)}
+                                className="bg-white p-4 rounded-xl shadow hover:shadow-lg cursor-pointer transition hover:-translate-y-1"
                             >
                                 <Image
-                                    src={product.image}
-                                    alt={product.name}
+                                    src={p.image || "/no-image.png"}
+                                    alt={p.model_name}
                                     width={300}
                                     height={300}
-                                    className="mx-auto"
+                                    className="rounded object-cover"
                                 />
-
-                                <h3 className="mt-4 font-semibold text-blue-900">
-                                    {product.name}
-                                </h3>
-
-                                <p className="text-sm text-gray-500">
-                                    {product.brand} • {product.type}
-                                </p>
-
-                                <p className="text-blue-700 font-bold mt-2">
-                                    ₹{product.price.toLocaleString()}
-                                </p>
-                            </Link>
+                                <h3 className="font-bold mt-2">{p.model_name}</h3>
+                                <p className="text-gray-600">{p.brand}</p>
+                                <p className="text-gray-500">{p.condition} • {p.ac_type}</p>
+                                <p className="font-bold text-blue-600">₹{p.price}</p>
+                            </div>
                         ))}
-
                     </div>
                 </div>
-
             </div>
         </section>
     );
