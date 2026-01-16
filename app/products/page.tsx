@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import ProductSinglePage from "./[id]/page";
+import ProductSinglePage from "./compo";
 
 type Product = {
     id: number;
@@ -28,7 +28,7 @@ export default function ProductsPage() {
 
     // Load filters dynamically
     useEffect(() => {
-        fetch("http://127.0.0.1:8000/api/ac-filter-list/")
+        fetch("http://13.127.148.32/api/ac-filter-list/")
             .then(res => res.json())
             .then(data => setFilters(data))
             .catch(err => console.error(err));
@@ -44,7 +44,7 @@ export default function ProductsPage() {
 
         setLoading(true);
 
-        fetch(`http://127.0.0.1:8000/api/acs/?${params.toString()}`)
+        fetch(`http://192.168.0.162/api/acs/?${params.toString()}`)
             .then(res => res.json())
             .then(data => {
                 // 2-second artificial delay
@@ -75,7 +75,7 @@ export default function ProductsPage() {
 
                 {/* FILTERS */}
                 <div className="bg-white p-6 rounded-xl shadow space-y-6 sticky top-24 h-fit">
-                    <h3 className="text-xl font-bold text-blue-900">Filters</h3>
+                    <h3 className="text-xl font-bold text-blue-900">Filters </h3>
 
                     {/* Brand */}
                     <div>
