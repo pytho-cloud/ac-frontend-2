@@ -1,15 +1,30 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter, usePathname } from 'next/navigation'
+import { Menu, X } from 'lucide-react'
 
 export default function Navbar() {
+    const [open, setOpen] = useState(false)
+    const router = useRouter()
+    const pathname = usePathname()
 
-    const scrollTo = (id: string) => {
-        const el = document.getElementById(id)
-        if (!el) return
+    const goToSection = (id: string) => {
+        setOpen(false)
 
-        const y = el.getBoundingClientRect().top + window.scrollY - 80 // navbar height
-        window.scrollTo({ top: y }) // ❌ no smooth
+        // If already on home page → smooth scroll
+        if (pathname === '/') {
+            const el = document.getElementById(id)
+            if (!el) return
+
+            const y = el.getBoundingClientRect().top + window.scrollY - 80
+            window.scrollTo({ top: y, behavior: 'smooth' })
+        } 
+        // Else → redirect to home with hash
+        else {
+            router.push(`/#${id}`)
+        }
     }
 
     return (
@@ -17,42 +32,48 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-6">
                 <div className="flex justify-between items-center h-16">
 
-                    <Link href="/" className="text-white text-2xl font-bold tracking-wide">
+                    <Link href="/" className="text-white text-2xl font-bold">
                         CoolTech<span className="text-sky-300">Services</span>
                     </Link>
 
-                    <div className="hidden md:flex space-x-8">
-                        {/* <Link href="/" className="nav-link">Home</Link> */}
+                    {/* Desktop */}
+                    <div className="hidden md:flex space-x-8 items-center">
+                        <button onClick={() => goToSection("home")} className="nav-link">Home</button>
+                        <button onClick={() => goToSection("about")} className="nav-link">About</button>
+                        <button onClick={() => goToSection("services")} className="nav-link">Services</button>
+                        <button onClick={() => goToSection("testimonial")} className="nav-link">Testimonials</button>
 
-                        <button onClick={() => scrollTo('home')} className="nav-link" >
-                            Home
-                        </button>
-                        {/* <Link href="/about" className="nav-link">About</Link> */}
-
-                        <button onClick={() => scrollTo("about")} className="nav-link">
-                            About
-                        </button>
-
-                        <button onClick={() => scrollTo("services")} className="nav-link">
-                            Services
-                        </button>
-
-                        {/* <Link href="/contact" className="nav-link">Contact</Link> */}
-
-                        <button onClick={() => scrollTo("testimonial")} className="nav-link">
-                            Testimonials
-
-                        </button>
-                    </div>
-
-                    <div className="hidden md:block w-50">
-                        <Link href="/products" className="nav-link bg-sky-400 text-blue-900 px-4 py-2 rounded-lg font-semibold hover:bg-sky-300 transition">
-                            Product
+                        <Link
+                            href="/products"
+                            className="bg-sky-400 text-blue-900 px-4 py-2 rounded-lg font-semibold"
+                        >
+                            Products
                         </Link>
                     </div>
 
+                    {/* Mobile */}
+                    <button onClick={() => setOpen(!open)} className="md:hidden text-white">
+                        {open ? <X size={28} /> : <Menu size={28} />}
+                    </button>
                 </div>
             </div>
+
+            {open && (
+                <div className="md:hidden bg-blue-600 px-6 py-4 space-y-4">
+                    <button onClick={() => goToSection("home")} className="block text-white">Home</button>
+                    <button onClick={() => goToSection("about")} className="block text-white">About</button>
+                    <button onClick={() => goToSection("services")} className="block text-white">Services</button>
+                    <button onClick={() => goToSection("testimonial")} className="block text-white">Testimonials</button>
+
+                    <Link
+                        href="/products"
+                        onClick={() => setOpen(false)}
+                        className="block bg-sky-400 text-blue-900 px-4 py-2 rounded-lg text-center"
+                    >
+                        Products
+                    </Link>
+                </div>
+            )}
         </nav>
     )
 }

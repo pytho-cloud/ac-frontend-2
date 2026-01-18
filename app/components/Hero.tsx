@@ -1,48 +1,34 @@
 'use client'
-import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 
-const words: string[] = [
+import { useEffect, useState, ChangeEvent, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+
+const words = [
   "With Our AC Services",
   "With Trusted Experts",
   "With Affordable Price",
   "With Fast Support"
 ];
 
-interface FormDataType {
-  full_name: string;
-  phone_number: string;
-  email: string;
-  service_requirements: string;
-}
-
-interface ProductFormType {
-  name: string;
-  address: string;
-  product_name: string;
-  price: string;
-  description: string;
-  phone_number: string;
-}
-
 export default function Hero() {
+  const router = useRouter();
 
   const [text, setText] = useState("");
   const [wordIndex, setWordIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
 
-  const [formVisible, setFormVisible] = useState(false);
-  const [productFormVisible, setProductFormVisible] = useState(false);
-
+  const [showService, setShowService] = useState(false);
+  const [showProduct, setShowProduct] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [formData, setFormData] = useState<FormDataType>({
+  const [serviceData, setServiceData] = useState({
     full_name: "",
     phone_number: "",
     email: "",
     service_requirements: ""
   });
 
-  const [productData, setProductData] = useState<ProductFormType>({
+  const [productData, setProductData] = useState({
     name: "",
     address: "",
     product_name: "",
@@ -51,66 +37,57 @@ export default function Hero() {
     phone_number: ""
   });
 
-  const [productImages, setProductImages] = useState<File[]>([]);
+  const [images, setImages] = useState<File[]>([]);
 
-  // Typing animation
+  /* typing animation */
   useEffect(() => {
-    const currentWord = words[wordIndex];
+    const word = words[wordIndex];
 
-    if (charIndex < currentWord.length) {
-      const timeout = setTimeout(() => {
-        setText(currentWord.slice(0, charIndex + 1));
+    if (charIndex < word.length) {
+      const t = setTimeout(() => {
+        setText(word.slice(0, charIndex + 1));
         setCharIndex(charIndex + 1);
       }, 80);
-      return () => clearTimeout(timeout);
+      return () => clearTimeout(t);
     } else {
-      const timeout = setTimeout(() => {
+      const t = setTimeout(() => {
         setCharIndex(0);
         setWordIndex((prev) => (prev + 1) % words.length);
         setText("");
       }, 1500);
-      return () => clearTimeout(timeout);
+      return () => clearTimeout(t);
     }
   }, [charIndex, wordIndex]);
 
-  // Handlers
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  /* handlers */
+  const handleServiceChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setServiceData({ ...serviceData, [e.target.name]: e.target.value });
   };
 
   const handleProductChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setProductData({ ...productData, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setProductImages(Array.from(e.target.files));
-    }
+  const handleImages = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) setImages(Array.from(e.target.files));
   };
 
-  // Service submit
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  /* submit service */
+  const submitService = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000//api/post-enquiry/", {
+      const res = await fetch("http://127.0.0.1:8000/api/post-enquiry/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(serviceData),
       });
 
       if (res.ok) {
-        alert("Service booked successfully!");
-        setFormData({
-          full_name: "",
-          phone_number: "",
-          email: "",
-          service_requirements: ""
-        });
-        setFormVisible(false);
-      } else {
-        alert("Submission failed");
+        alert("Service booked successfully");
+        setShowService(false);
+        router.push("/#service"); // 🔥 REDIRECTION
       }
     } catch {
       alert("Server error");
@@ -119,43 +96,25 @@ export default function Hero() {
     setLoading(false);
   };
 
-  // Product submit with images
-  const handleProductSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  /* submit product */
+  const submitProduct = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
+    const fd = new FormData();
+    Object.entries(productData).forEach(([k, v]) => fd.append(k, v));
+    images.forEach(img => fd.append("images", img));
+
     try {
-      const formData = new FormData();
-      formData.append("name", productData.name);
-      formData.append("address", productData.address);
-      formData.append("product_name", productData.product_name);
-      formData.append("price", productData.price);
-      formData.append("description", productData.description);
-      formData.append("phone_number", productData.phone_number);
-
-      productImages.forEach(img => {
-        formData.append("images", img);
-      });
-
-      const res = await fetch("http://127.0.0.1:8000//api/product-sell-create/", {
+      const res = await fetch("http://127.0.0.1:8000/api/product-sell-create/", {
         method: "POST",
-        body: formData
+        body: fd,
       });
 
       if (res.ok) {
-        alert("Product submitted successfully!");
-        setProductData({
-          name: "",
-          address: "",
-          product_name: "",
-          price: "",
-          description: "",
-          phone_number: ""
-        });
-        setProductImages([]);
-        setProductFormVisible(false);
-      } else {
-        alert("Submission failed");
+        alert("Product submitted successfully");
+        setShowProduct(false);
+        router.push("/#products"); // 🔥 REDIRECTION
       }
     } catch {
       alert("Server error");
@@ -167,9 +126,8 @@ export default function Hero() {
   return (
     <>
       {/* HERO */}
-      <section className="relative bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex items-center">
-
-        <div className="relative max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+      <section id="home" className="relative bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex items-center">
+        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
 
           <div>
             <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900">
@@ -184,32 +142,31 @@ export default function Hero() {
             </p>
 
             <div className="mt-8 flex gap-4">
-              <button onClick={() => setFormVisible(true)} className="bg-blue-600 text-white px-6 py-3 rounded-xl">
+              <button onClick={() => setShowService(true)} className="bg-blue-600 text-white px-6 py-3 rounded-xl">
                 Book Service
               </button>
 
-              <button onClick={() => setProductFormVisible(true)} className="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-xl">
+              <button onClick={() => setShowProduct(true)} className="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-xl">
                 Sell Product
               </button>
             </div>
           </div>
 
           <img src="/images/hero-ac.png" className="w-full max-w-md mx-auto" />
-
         </div>
       </section>
 
       {/* SERVICE MODAL */}
-      {formVisible && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50" onClick={() => setFormVisible(false)}>
-          <div className="bg-white p-8 rounded-xl max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+      {showService && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowService(false)}>
+          <div className="bg-white p-8 rounded-xl max-w-md w-full" onClick={e => e.stopPropagation()}>
             <h2 className="text-xl font-bold mb-4">Book Service</h2>
 
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              <input name="full_name" value={formData.full_name} onChange={handleChange} placeholder="Full Name" className="w-full border p-3 rounded" required />
-              <input name="phone_number" value={formData.phone_number} onChange={handleChange} placeholder="Phone" className="w-full border p-3 rounded" required />
-              <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" className="w-full border p-3 rounded" />
-              <textarea name="service_requirements" value={formData.service_requirements} onChange={handleChange} placeholder="Requirement" className="w-full border p-3 rounded" required />
+            <form className="space-y-4" onSubmit={submitService}>
+              <input name="full_name" onChange={handleServiceChange} placeholder="Full Name" className="w-full border p-3 rounded" required />
+              <input name="phone_number" onChange={handleServiceChange} placeholder="Phone" className="w-full border p-3 rounded" required />
+              <input name="email" onChange={handleServiceChange} placeholder="Email" className="w-full border p-3 rounded" />
+              <textarea name="service_requirements" onChange={handleServiceChange} placeholder="Requirement" className="w-full border p-3 rounded" required />
 
               <button className="w-full bg-blue-600 text-white py-3 rounded">
                 {loading ? "Submitting..." : "Submit"}
@@ -220,36 +177,27 @@ export default function Hero() {
       )}
 
       {/* PRODUCT MODAL */}
-      {productFormVisible && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50" onClick={() => setProductFormVisible(false)}>
-          <div className="bg-white p-8 rounded-xl max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+      {showProduct && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowProduct(false)}>
+          <div className="bg-white p-8 rounded-xl max-w-md w-full" onClick={e => e.stopPropagation()}>
             <h2 className="text-xl font-bold mb-4">Sell Product</h2>
 
-            <form className="space-y-4" onSubmit={handleProductSubmit}>
-
-              <input name="name" value={productData.name} onChange={handleProductChange} placeholder="Your Name" className="w-full border p-3 rounded" required />
-
-              <textarea name="address" value={productData.address} onChange={handleProductChange} placeholder="Your Address" className="w-full border p-3 rounded" required />
-
-              <input name="product_name" value={productData.product_name} onChange={handleProductChange} placeholder="Product Name" className="w-full border p-3 rounded" required />
-
-              <input name="price" value={productData.price} onChange={handleProductChange} placeholder="Price" className="w-full border p-3 rounded" required />
-
-              <textarea name="description" value={productData.description} onChange={handleProductChange} placeholder="Description" className="w-full border p-3 rounded" required />
-
-              <input name="phone_number" value={productData.phone_number} onChange={handleProductChange} placeholder="Phone Number" className="w-full border p-3 rounded" required />
-
-              <input type="file" multiple accept="image/*" onChange={handleImageChange} className="w-full border p-3 rounded" required />
+            <form className="space-y-4" onSubmit={submitProduct}>
+              <input name="name" onChange={handleProductChange} placeholder="Name" className="w-full border p-3 rounded" required />
+              <textarea name="address" onChange={handleProductChange} placeholder="Address" className="w-full border p-3 rounded" required />
+              <input name="product_name" onChange={handleProductChange} placeholder="Product Name" className="w-full border p-3 rounded" required />
+              <input name="price" onChange={handleProductChange} placeholder="Price" className="w-full border p-3 rounded" required />
+              <textarea name="description" onChange={handleProductChange} placeholder="Description" className="w-full border p-3 rounded" required />
+              <input name="phone_number" onChange={handleProductChange} placeholder="Phone" className="w-full border p-3 rounded" required />
+              <input type="file" multiple onChange={handleImages} className="w-full border p-3 rounded" />
 
               <button className="w-full bg-blue-600 text-white py-3 rounded">
                 {loading ? "Submitting..." : "Submit Product"}
               </button>
-
             </form>
           </div>
         </div>
       )}
-
     </>
   );
 }

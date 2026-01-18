@@ -4,10 +4,12 @@ import Service from "./components/Service";
 import WhyChooseUs from "./components/WhyChooseUs";
 import Testimonials from "./components/testimonials";
 import HomeProducts from "./components/HomeProduct";
+import HashScroll from "./components/HashScroll";
 
 export default function Home() {
   return (
     <>
+
       <Hero />
       <Service />
       <HomeProducts />

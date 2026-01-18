@@ -46,7 +46,7 @@ export default function HomeProducts() {
     }, []);
 
     return (
-        <section className="py-20 bg-white">
+        <section id="home" className="py-20 bg-white">
 
             {/* ================= NEW PRODUCTS ================= */}
             <div className="max-w-7xl mx-auto px-6 mb-20">
@@ -83,13 +83,32 @@ export default function HomeProducts() {
                             </p> */}
 
                             <div className="mt-4 flex gap-3">
-                                <button className="w-1/2 bg-blue-600 text-white py-2 rounded-xl text-sm">
+                                <a
+                                    href="tel:+919999999999"
+                                    className="bg-blue-600 text-white py-2 rounded-xl text-sm block"
+                                >
                                     Call
-                                </button>
+                                </a>
 
-                                <button className="w-1/2 bg-green-600 text-white py-2 rounded-xl text-sm">
-                                    Whatsapp
-                                </button>
+                                {/* Desktop hover */}
+                                <span className="hidden md:block absolute -top-10 left-1/2 -translate-x-1/2
+                                    bg-black text-white text-xs px-3 py-1 rounded-lg">
+                                    +91 99999 99999
+                                </span>
+
+                                {/* Mobile always visible */}
+                                <span className="block md:hidden mt-1 text-xs text-blue-700">
+                                    +91 99999 99999
+                                </span>
+
+
+                                <a
+                                    href={`https://wa.me/919999999999?text=Hi, I am interested in ${product.brand} ${product.model_name}`}
+                                    target="_blank"
+                                    className="w-1/2 bg-green-600 text-white py-2 rounded-xl text-sm text-center"
+                                >
+                                    WhatsApp
+                                </a>
                             </div>
                         </motion.div>
                     ))}
