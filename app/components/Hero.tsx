@@ -152,7 +152,16 @@ export default function Hero() {
             </div>
           </div>
 
-          <img src="/images/hero-ac.png" className="w-full max-w-md mx-auto" />
+          <img
+            src="/logo.png"
+            className="
+    w-full max-w-md mx-auto
+    transform transition-transform duration-500
+    hover:scale-110 hover:-rotate-3 hover:translate-y-1
+  "
+          />
+
+
         </div>
       </section>
 

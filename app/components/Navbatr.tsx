@@ -20,7 +20,7 @@ export default function Navbar() {
 
             const y = el.getBoundingClientRect().top + window.scrollY - 80
             window.scrollTo({ top: y, behavior: 'smooth' })
-        } 
+        }
         // Else → redirect to home with hash
         else {
             router.push(`/#${id}`)
@@ -33,7 +33,14 @@ export default function Navbar() {
                 <div className="flex justify-between items-center h-16">
 
                     <Link href="/" className="text-white text-2xl font-bold">
-                        CoolTech<span className="text-sky-300">Services</span>
+                        <img
+                            src="/logo.png"
+                            alt="Logo"
+                            className="h-16 w-auto"
+                            style={{ filter: "drop-shadow(0 0 2px white)" }}
+
+                        />
+
                     </Link>
 
                     {/* Desktop */}
