@@ -46,7 +46,7 @@ export default function Services() {
     ]
 
     return (
-        <section className="py-20 bg-blue-50">
+        <section className="py-20 bg-blue-50" id = "services">
             <div className="max-w-7xl mx-auto px-6 text-center">
 
                 {/* Heading animation */}

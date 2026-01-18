@@ -30,7 +30,7 @@ export default function HomeProducts() {
 
     const callHomeProducts = async () => {
         try {
-            const response = await fetch("http://192.168.0.162:8000/api/acs/");
+            const response = await fetch("http://127.0.0.1:8000/api/acs/");
             const result: HomeProductsResponse = await response.json();
 
             setNew(result.data_new);
@@ -67,7 +67,7 @@ export default function HomeProducts() {
                             className="bg-blue-50 rounded-2xl p-5 shadow hover:shadow-xl transition hover:-translate-y-2"
                         >
                             <Image
-                                src={`http://192.168.0.162:8000/${product.image}`}
+                                src={`http://127.0.0.1:8000/${product.image}`}
                                 alt={product.model_name}
                                 width={300}
                                 height={300}
@@ -78,9 +78,9 @@ export default function HomeProducts() {
                                 {product.brand} {product.model_name}
                             </h3>
 
-                            <p className="text-blue-700 font-bold mt-2">
+                            {/* <p className="text-blue-700 font-bold mt-2">
                                 ₹{product.price}
-                            </p>
+                            </p> */}
 
                             <div className="mt-4 flex gap-3">
                                 <button className="w-1/2 bg-blue-600 text-white py-2 rounded-xl text-sm">
@@ -117,7 +117,7 @@ export default function HomeProducts() {
                             className="bg-green-50 rounded-2xl p-5 shadow hover:shadow-xl transition hover:-translate-y-2"
                         >
                             <Image
-                                src={`http://192.168.0.162:8000${product.image}`}
+                                src={`http://127.0.0.1:8000/${product.image}`}
                                 alt={product.model_name}
                                 width={300}
                                 height={300}
@@ -128,9 +128,9 @@ export default function HomeProducts() {
                                 {product.brand} {product.model_name}
                             </h3>
 
-                            <p className="text-green-700 font-bold mt-2">
+                            {/* <p className="text-green-700 font-bold mt-2">
                                 ₹{product.price}
-                            </p>
+                            </p> */}
 
                             <div className="mt-4 flex gap-3">
                                 <button className="w-1/2 bg-blue-600 text-white py-2 rounded-xl text-sm">

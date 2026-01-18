@@ -61,3 +61,7 @@ body {
 .animate-slideUp {
   animation: slideUp 1.2s ease-out forwards;
 }
+
+html {
+  scroll-behavior: smooth;
+}

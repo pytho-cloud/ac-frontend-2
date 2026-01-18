@@ -8,13 +8,13 @@ export default function Footer() {
             <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-10">
 
                 {/* Company */}
-                <div>
+                {/* <div>
                     <h3 className="text-xl font-bold mb-4">CoolAir Services</h3>
                     <p className="text-blue-200 text-sm leading-relaxed">
                         Professional AC installation, repair, maintenance and best AC product sales
                         at affordable prices.
                     </p>
-                </div>
+                </div> */}
 
                 {/* Links */}
                 <div>
@@ -52,8 +52,9 @@ export default function Footer() {
 
             {/* Bottom */}
             <div className="border-t border-blue-700 mt-12 pt-6 text-center text-blue-300 text-sm">
-                © {new Date().getFullYear()} CoolAir Services. All rights reserved.
+                © {new Date().getFullYear()} Tantratech. All rights reserved.
             </div>
+
         </footer>
     );
 }

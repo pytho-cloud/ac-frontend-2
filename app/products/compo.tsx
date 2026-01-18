@@ -29,7 +29,7 @@ export default function ProductSinglePage({ product, onBack }: Props) {
                 {/* IMAGE */}
                 <div className="bg-white p-6 rounded-xl shadow flex justify-center">
                     <img
-                        src={product.image}
+                        src={"http://192.168.0.108:8000/" + product.image}
                         alt={product.model_name}
                         className="w-full h-72 object-cover rounded"
                     />
@@ -64,14 +64,24 @@ export default function ProductSinglePage({ product, onBack }: Props) {
                         >+</button>
                     </div> */}
 
-                    <div className="mt-8 flex gap-4">
-                        <button className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-500 transition">
-                            Add to Cart
-                        </button>
-                        <button className="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-500 transition">
-                            Enquiry
-                        </button>
+                    <div className="flex gap-4">
+                        <a
+                            href="tel:+919876543210"
+                            className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-500 transition inline-block"
+                        >
+                            📞 Call
+                        </a>
+
+                        <a
+                            href="https://wa.me/9167208204?text=Hi%20I%20am%20interested%20in%20your%20AC%20service"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-500 transition inline-block"
+                        >
+                            💬 WhatsApp
+                        </a>
                     </div>
+
                 </div>
             </div>
         </section>
