@@ -41,10 +41,10 @@ export default function Footer() {
                 {/* Contact */}
                 <div>
                     <h4 className="font-semibold mb-4">Contact</h4>
-                    <p className="text-blue-200 text-sm">📞 +91 98765 43210</p>
-                    <p className="text-blue-200 text-sm mt-2">📧 support@coolair.com</p>
+                    <p className="text-blue-200 text-sm">📞 +91 97025 56529</p>
+                    <p className="text-blue-200 text-sm mt-2">📧 cooltechservice02@gmail.com</p>
                     <p className="text-blue-200 text-sm mt-2">
-                        📍 Your City, India
+                        📍 OPP BILDING NO 171 KANNAMWAR NAGAR -2 , VIKHROLI (E) MUMBAI-400083
                     </p>
                 </div>
 
