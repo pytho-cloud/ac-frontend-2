@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
   output: "export",
   images: {
     unoptimized: true,
+    domains: ["127.0.0.1", "localhost"], // allow backend images
   },
 };
 

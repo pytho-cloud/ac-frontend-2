@@ -1,89 +1,148 @@
 'use client'
 
-import Image from "next/image";
 import { useState } from "react";
+import Loading from "./loading";
+
+type ProductImage = {
+  image: string;
+};
 
 type Product = {
-    id: number;
-    brand: string;
-    model_name: string;
-    condition: string;
-    ac_type: string;
-    price: number;
-    image?: string;
-    description?: string
+  id: number;
+  brand: string;
+  model_name: string;
+  condition: string;
+  ac_type: string;
+  price: number;
+  image?: string;
+  images?: ProductImage[];
+  description?: string;
 };
 
 interface Props {
-    product: Product;
-    onBack: () => void;
+  product: Product;
+  onBack: () => void;
 }
 
 export default function ProductSinglePage({ product, onBack }: Props) {
-    const [qty, setQty] = useState(1);
 
-    return (
-        <section className="py-20 bg-gray-50">
-            <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12">
+  const images =
+    product.images && product.images.length > 0
+      ? product.images.map(img => img.image)
+      : product.image
+      ? [product.image]
+      : [];
 
-                {/* IMAGE */}
-                <div className="bg-white p-6 rounded-xl shadow flex justify-center">
-                    <img
-                        src={"http://192.168.0.108:8000/" + product.image}
-                        alt={product.model_name}
-                        className="w-full h-72 object-cover rounded"
-                    />
-                </div>
+  const [current, setCurrent] = useState(0);
 
-                {/* INFO */}
-                <div>
+  const prevImage = () => {
+    setCurrent(current === 0 ? images.length - 1 : current - 1);
+  };
+
+  const nextImage = () => {
+    setCurrent(current === images.length - 1 ? 0 : current + 1);
+  };
+
+  return (
+    <section className="py-20 bg-gray-50">
+      <Loading />
+      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12">
+
+        {/* IMAGE SLIDER */}
+        <div className="bg-white p-6 rounded-xl shadow">
+          {images.length > 0 && (
+            <>
+              <div className="relative">
+                <img
+                  src={`http://localhost:8000${images[current]}`}
+                  alt={product.model_name}
+                  className="w-full h-72 object-cover rounded-xl"
+                />
+
+                {images.length > 1 && (
+                  <>
                     <button
-                        className="mb-4 text-blue-600 hover:underline"
-                        onClick={onBack}
+                      onClick={prevImage}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 px-3 py-1 rounded-full shadow text-xl"
                     >
-                        ← Back to Products
+                      ‹
                     </button>
 
-                    <h1 className="text-3xl font-bold text-blue-900">{product.model_name}</h1>
-                    <p>{product.brand}</p>
-                    <p>{product.condition} • {product.ac_type}</p>
-                    <p>{product.description}</p>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 px-3 py-1 rounded-full shadow text-xl"
+                    >
+                      ›
+                    </button>
+                  </>
+                )}
+              </div>
 
-                    <p className="font-bold text-green-600">₹{product.price}</p>
-
-                    {/* Quantity */}
-                    {/* <div className="mt-6 flex items-center gap-4">
-                        <button
-                            className="px-3 py-1 border rounded"
-                            onClick={() => setQty(Math.max(1, qty - 1))}
-                        >-</button>
-                        <span className="font-semibold">{qty}</span>
-                        <button
-                            className="px-3 py-1 border rounded"
-                            onClick={() => setQty(qty + 1)}
-                        >+</button>
-                    </div> */}
-
-                    <div className="flex gap-4">
-                        <a
-                            href="tel:+919876543210"
-                            className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-500 transition inline-block"
-                        >
-                            📞 Call
-                        </a>
-
-                        <a
-                            href="https://wa.me/9167208204?text=Hi%20I%20am%20interested%20in%20your%20AC%20service"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-500 transition inline-block"
-                        >
-                            💬 WhatsApp
-                        </a>
-                    </div>
-
+              {/* THUMBNAILS */}
+              {images.length > 1 && (
+                <div className="flex gap-3 mt-4 justify-center">
+                  {images.map((img, index) => (
+                    <img
+                      key={index}
+                      src={`http://localhost:8000${img}`}
+                      onClick={() => setCurrent(index)}
+                      className={`w-16 h-16 object-cover rounded cursor-pointer border-2 transition
+                        ${
+                          current === index
+                            ? "border-blue-600"
+                            : "border-transparent"
+                        }`}
+                    />
+                  ))}
                 </div>
-            </div>
-        </section>
-    );
+              )}
+            </>
+          )}
+        </div>
+
+        {/* INFO */}
+        <div>
+          <button
+            className="mb-4 text-blue-600 hover:underline"
+            onClick={onBack}
+          >
+            ← Back to Products
+          </button>
+
+          <h1 className="text-3xl font-bold text-blue-900">
+            {product.model_name}
+          </h1>
+
+          <p className="mt-1 text-gray-700">{product.brand}</p>
+          <p className="text-gray-600">
+            {product.condition} • {product.ac_type}
+          </p>
+
+          {product.description && (
+            <p className="mt-4 text-gray-700">
+              {product.description}
+            </p>
+          )}
+
+          <div className="flex gap-4 mt-6">
+            <a
+              href="tel:+919876543210"
+              className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-500 transition"
+            >
+              📞 Call
+            </a>
+
+            <a
+              href="https://wa.me/9167208204?text=Hi%20I%20am%20interested%20in%20your%20AC"
+              target="_blank"
+              className="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-500 transition"
+            >
+              💬 WhatsApp
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
 }
