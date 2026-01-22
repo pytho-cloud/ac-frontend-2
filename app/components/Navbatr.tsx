@@ -23,7 +23,7 @@ export default function Navbar() {
         }
         // Else → redirect to home with hash
         else {
-            router.push(`/#${id}`)
+            router.push("/")
         }
     }
 
