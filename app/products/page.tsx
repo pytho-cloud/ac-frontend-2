@@ -1,180 +1,199 @@
 'use client'
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import ProductSinglePage from "./compo";
+import { useEffect, useState } from "react"
+import ProductSinglePage from "./compo"
 
 type Product = {
-    id: number;
-    brand: string;
-    model_name: string;
-    condition: string;
-    ac_type: string;
-    price: number;
-    image?: string;
-};
+  id: number
+  brand: string
+  model_name: string
+  condition: string
+  ac_type: string
+  price: number
+  image?: string
+}
 
 export default function ProductsPage() {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [filters, setFilters] = useState<any>({});
-    const [brand, setBrand] = useState("");
-    const [model, setModel] = useState("");
-    const [condition, setCondition] = useState("");
-    const [acType, setAcType] = useState("");
-    const [loading, setLoading] = useState(true);
-    const [show, setShow] = useState(false);
+  const [products, setProducts] = useState<Product[]>([])
+  const [filters, setFilters] = useState<any>({})
+  const [brand, setBrand] = useState("")
+  const [model, setModel] = useState("")
+  const [condition, setCondition] = useState("")
+  const [acType, setAcType] = useState("")
+  const [loading, setLoading] = useState(true)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [showFilters, setShowFilters] = useState(false)
 
-    // Load filters dynamically
-    useEffect(() => {
-        fetch("http://127.0.0.1:8000/api/ac-filter-list/")
-            .then(res => res.json())
-            .then(data => setFilters(data))
-            .catch(err => console.error(err));
-    }, []);
+  // Load filters
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/ac-filter-list/")
+      .then(res => res.json())
+      .then(data => setFilters(data))
+      .catch(console.error)
+  }, [])
 
-    // Load products with 2-second delay
-    useEffect(() => {
-        const params = new URLSearchParams();
-        if (brand) params.append("brand", brand);
-        if (model) params.append("model_name", model);
-        if (condition) params.append("condition", condition);
-        if (acType) params.append("ac_type", acType);
+  // Load products
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (brand) params.append("brand", brand)
+    if (model) params.append("model_name", model)
+    if (condition) params.append("condition", condition)
+    if (acType) params.append("ac_type", acType)
 
-        setLoading(true);
+    setLoading(true)
 
-        fetch(`http://127.0.0.1:8000/api/products-acs/?${params.toString()}`)
-            .then(res => res.json())
-            .then(data => {
-                // 2-second artificial delay
-                setTimeout(() => {
-                    setProducts(data);
-                    setLoading(false);
-                }, 2000);
-            })
-            .catch(err => {
-                console.error(err);
-                setLoading(false);
-            });
-    }, [brand, model, condition, acType]);
+    fetch(`http://127.0.0.1:8000/api/products-acs/?${params}`)
+      .then(res => res.json())
+      .then(data => {
+        setTimeout(() => {
+          setProducts(data)
+          setLoading(false)
+        }, 800)
+      })
+      .catch(() => setLoading(false))
+  }, [brand, model, condition, acType])
 
-    if (selectedProduct) {
-        return (
-            <ProductSinglePage
-                product={selectedProduct}
-                onBack={() => setSelectedProduct(null)}
-            />
-        );
-    }
-
+  if (selectedProduct) {
     return (
+      <ProductSinglePage
+        product={selectedProduct}
+        onBack={() => setSelectedProduct(null)}
+      />
+    )
+  }
 
-        <section className="py-10 bg-blue-50">
-            <div className="max-w-7xl mx-auto grid grid-cols-[260px_1fr] gap-6 px-6">
+  return (
+    <section className="py-10 bg-blue-50">
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
 
-                {/* FILTERS */}
-                <div className="bg-white p-6 rounded-xl shadow space-y-6 sticky top-24 h-fit">
-                    <h3 className="text-xl font-bold text-blue-900">Filters </h3>
+        {/* MOBILE FILTER TOGGLE */}
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="md:hidden mb-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold"
+        >
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </button>
 
-                    {/* Brand */}
-                    <div>
-                        <p className="font-semibold mb-2">Brand</p>
-                        <div className="flex flex-wrap gap-2">
-                            {[""].concat(filters.brand || []).map((b: string, i: number) => (
-                                <button
-                                    key={i}
-                                    onClick={() => setBrand(b)}
-                                    className={`px-3 py-1 rounded-full text-sm font-medium transition
-                  ${brand === b ? "bg-blue-600 text-white" : "bg-gray-100 hover:bg-blue-100"}`}
-                                >
-                                    {b || "All"}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+        <div className="grid md:grid-cols-[260px_1fr] gap-6">
 
-                    {/* Model */}
-                    <div>
-                        <p className="font-semibold mb-2">Model</p>
-                        <div className="flex flex-wrap gap-2">
-                            {[""].concat(filters.model_name || []).map((m: string, i: number) => (
-                                <button
-                                    key={i}
-                                    onClick={() => setModel(m)}
-                                    className={`px-3 py-1 rounded-full text-sm font-medium transition
-                  ${model === m ? "bg-green-600 text-white" : "bg-gray-100 hover:bg-green-100"}`}
-                                >
-                                    {m || "All"}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+          {/* FILTERS */}
+          <div
+            className={`bg-white p-5 rounded-xl shadow space-y-6
+              ${showFilters ? "block" : "hidden"} md:block
+              md:sticky md:top-24 h-fit`}
+          >
+            <h3 className="text-xl font-bold text-blue-900">Filters</h3>
 
-                    {/* Condition */}
-                    <div>
-                        <p className="font-semibold mb-2">Condition</p>
-                        <div className="flex flex-wrap gap-2">
-                            {[""].concat(filters.condition || []).map((c: string, i: number) => (
-                                <button
-                                    key={i}
-                                    onClick={() => setCondition(c)}
-                                    className={`px-3 py-1 rounded-full text-sm font-medium transition
-                  ${condition === c ? "bg-yellow-600 text-white" : "bg-gray-100 hover:bg-yellow-100"}`}
-                                >
-                                    {c || "All"}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+            {/* Brand */}
+            <FilterGroup
+              title="Brand"
+              options={filters.brand}
+              value={brand}
+              onChange={setBrand}
+              activeClass="bg-blue-600 text-white"
+              hoverClass="hover:bg-blue-100"
+            />
 
-                    {/* AC Type */}
-                    <div>
-                        <p className="font-semibold mb-2">AC Type</p>
-                        <div className="flex flex-wrap gap-2">
-                            {[""].concat(filters.ac_type || []).map((a: string, i: number) => (
-                                <button
-                                    key={i}
-                                    onClick={() => setAcType(a)}
-                                    className={`px-3 py-1 rounded-full text-sm font-medium transition
-                  ${acType === a ? "bg-purple-600 text-white" : "bg-gray-100 hover:bg-purple-100"}`}
-                                >
-                                    {a || "All"}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+            {/* Model */}
+            <FilterGroup
+              title="Model"
+              options={filters.model_name}
+              value={model}
+              onChange={setModel}
+              activeClass="bg-green-600 text-white"
+              hoverClass="hover:bg-green-100"
+            />
+
+            {/* Condition */}
+            <FilterGroup
+              title="Condition"
+              options={filters.condition}
+              value={condition}
+              onChange={setCondition}
+              activeClass="bg-yellow-600 text-white"
+              hoverClass="hover:bg-yellow-100"
+            />
+
+            {/* AC Type */}
+            <FilterGroup
+              title="AC Type"
+              options={filters.ac_type}
+              value={acType}
+              onChange={setAcType}
+              activeClass="bg-purple-600 text-white"
+              hoverClass="hover:bg-purple-100"
+            />
+          </div>
+
+          {/* PRODUCTS */}
+          <div>
+            {loading && (
+              <p className="text-center text-blue-700 font-semibold mt-10">
+                Loading products...
+              </p>
+            )}
+
+            {!loading && products.length === 0 && (
+              <p className="text-center text-gray-600">
+                No products found.
+              </p>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {products.map(p => (
+                <div
+                  key={p.id}
+                  onClick={() => setSelectedProduct(p)}
+                  className="bg-white p-4 rounded-xl shadow hover:shadow-lg cursor-pointer transition hover:-translate-y-1"
+                >
+                  <img
+                    src={`http://127.0.0.1:8000/${p.image}`}
+                    alt={p.model_name}
+                    className="w-full h-48 object-cover rounded"
+                  />
+
+                  <h3 className="font-bold mt-3">{p.model_name}</h3>
+                  <p className="text-gray-600">{p.brand}</p>
+                  <p className="text-gray-500 text-sm">
+                    {p.condition} • {p.ac_type}
+                  </p>
                 </div>
-
-                {/* PRODUCTS */}
-                <div>
-                    {loading && <p className="text-center text-blue-700 font-semibold mt-10">Loading products...</p>}
-                    {!loading && products.length === 0 && <p>No products found.</p>}
-
-                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-                        {products.map(p => (
-                            <div
-                                key={p.id}  
-                                onClick={() => setSelectedProduct(p)}
-                                className="bg-white p-4 rounded-xl shadow hover:shadow-lg cursor-pointer transition hover:-translate-y-1"
-                            >
-                                <img
-                                    src={ "http://127.0.0.1:8000/"+p.image }
-                                    alt={p.model_name}
-                                    width={300}
-                                    height={300}
-                                    className="rounded object-cover"
-                                />
-
-                                <h3 className="font-bold mt-2">{p.model_name}</h3>
-                                <p className="text-gray-600">{p.brand}</p>
-                                <p className="text-gray-500">{p.condition} • {p.ac_type}</p>
-                                {/* <p className="font-bold text-blue-600">₹{p.price}</p> */}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+              ))}
             </div>
-        </section>
-    );
+          </div>
+
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ---------------- FILTER GROUP COMPONENT ---------------- */
+
+function FilterGroup({
+  title,
+  options = [],
+  value,
+  onChange,
+  activeClass,
+  hoverClass
+}: any) {
+  return (
+    <div>
+      <p className="font-semibold mb-2">{title}</p>
+      <div className="flex flex-wrap gap-2">
+        {[""].concat(options).map((opt: string, i: number) => (
+          <button
+            key={i}
+            onClick={() => onChange(opt)}
+            className={`px-3 py-1 rounded-full text-sm font-medium transition
+              ${value === opt ? activeClass : `bg-gray-100 ${hoverClass}`}`}
+          >
+            {opt || "All"}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 }

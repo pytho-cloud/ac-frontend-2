@@ -47,7 +47,7 @@ export default function WhyChooseUs() {
     }, [])
 
     return (
-        <section ref={sectionRef} className="py-20 bg-blue-50 overflow-hidden"  id='about'>
+        <section ref={sectionRef} className="py-20 bg-white overflow-hidden"  id='about'>
             <div className="max-w-5xl mx-auto px-6 text-center">
 
                 {/* Heading animation */}

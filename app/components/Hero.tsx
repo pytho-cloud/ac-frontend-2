@@ -2,6 +2,8 @@
 
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { X } from "lucide-react";
 
 const words = [
   "With Our AC Services",
@@ -13,14 +15,23 @@ const words = [
 export default function Hero() {
   const router = useRouter();
 
+  const heroImages = [
+    "/hero/hero1.jpg",
+    "/hero/hero2.jpg",
+    "/hero/hero3.jpg",
+  ];
+
+  /* typing animation */
   const [text, setText] = useState("");
   const [wordIndex, setWordIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
 
+  /* modal states */
   const [showService, setShowService] = useState(false);
   const [showProduct, setShowProduct] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  /* forms */
   const [serviceData, setServiceData] = useState({
     full_name: "",
     phone_number: "",
@@ -39,7 +50,17 @@ export default function Hero() {
 
   const [images, setImages] = useState<File[]>([]);
 
-  /* typing animation */
+  /* background slider */
+  const [bgIndex, setBgIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % heroImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  /* typing effect */
   useEffect(() => {
     const word = words[wordIndex];
 
@@ -87,12 +108,11 @@ export default function Hero() {
       if (res.ok) {
         alert("Service booked successfully");
         setShowService(false);
-        router.push("/#service"); // 🔥 REDIRECTION
+        router.push("/#service");
       }
     } catch {
       alert("Server error");
     }
-
     setLoading(false);
   };
 
@@ -114,39 +134,58 @@ export default function Hero() {
       if (res.ok) {
         alert("Product submitted successfully");
         setShowProduct(false);
-        router.push("/#products"); // 🔥 REDIRECTION
+        router.push("/#products");
       }
     } catch {
       alert("Server error");
     }
-
     setLoading(false);
   };
 
   return (
     <>
-      {/* HERO */}
-      <section id="home" className="relative bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex items-center">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+      {/* HERO SECTION */}
+      <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={bgIndex}
+              src={heroImages[bgIndex]}
+              className="w-full h-full object-cover"
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              transition={{ duration: 1 }}
+            />
+          </AnimatePresence>
+          <div className="absolute inset-0 bg-black/50" />
+        </div>
 
+        <div className="relative z-10 max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900">
+            <h1 className="text-3xl md:text-5xl font-extrabold text-white">
               Stay Cool & Comfortable <br />
-              <span className="text-blue-600">
+              <span className="text-blue-400">
                 {text}<span className="animate-pulse">|</span>
               </span>
             </h1>
 
-            <p className="mt-6 text-lg text-blue-700">
-              Professional AC installation, repair and maintenance.
+            <p className="mt-6 text-lg text-blue-100">
+              Professional AC installation, repair and services.
             </p>
 
-            <div className="mt-8 flex gap-4">
-              <button onClick={() => setShowService(true)} className="bg-blue-600 text-white px-6 py-3 rounded-xl">
+            <div className="mt-8 flex flex-wrap gap-4">
+              <button
+                onClick={() => setShowService(true)}
+                className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:scale-105 transition"
+              >
                 Book Service
               </button>
 
-              <button onClick={() => setShowProduct(true)} className="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-xl">
+              <button
+                onClick={() => setShowProduct(true)}
+                className="border-2 border-blue-400 text-blue-400 px-6 py-3 rounded-xl hover:bg-blue-600 hover:text-white transition"
+              >
                 Sell Product
               </button>
             </div>
@@ -154,59 +193,81 @@ export default function Hero() {
 
           <img
             src="/logo.png"
-            className="
-    w-full max-w-md mx-auto
-    transform transition-transform duration-500
-    hover:scale-110 hover:-rotate-3 hover:translate-y-1
-  "
+            className="w-full max-w-md mx-auto hover:scale-110 transition"
           />
-
-
         </div>
       </section>
 
       {/* SERVICE MODAL */}
-      {showService && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowService(false)}>
-          <div className="bg-white p-8 rounded-xl max-w-md w-full" onClick={e => e.stopPropagation()}>
-            <h2 className="text-xl font-bold mb-4">Book Service</h2>
-
-            <form className="space-y-4" onSubmit={submitService}>
-              <input name="full_name" onChange={handleServiceChange} placeholder="Full Name" className="w-full border p-3 rounded" required />
-              <input name="phone_number" onChange={handleServiceChange} placeholder="Phone" className="w-full border p-3 rounded" required />
-              <input name="email" onChange={handleServiceChange} placeholder="Email" className="w-full border p-3 rounded" />
-              <textarea name="service_requirements" onChange={handleServiceChange} placeholder="Requirement" className="w-full border p-3 rounded" required />
-
-              <button className="w-full bg-blue-600 text-white py-3 rounded">
-                {loading ? "Submitting..." : "Submit"}
+      <AnimatePresence>
+        {showService && (
+          <motion.div
+            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowService(false)}
+          >
+            <motion.div
+              className="bg-white p-6 md:p-8 rounded-xl max-w-md w-[95%] max-h-[90vh] overflow-y-auto relative"
+              initial={{ scale: 0.9, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 30 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button onClick={() => setShowService(false)} className="absolute top-4 right-4">
+                <X />
               </button>
-            </form>
-          </div>
-        </div>
-      )}
+
+              <h2 className="text-xl font-bold mb-4 text-center">Book Service</h2>
+
+              <form className="space-y-4" onSubmit={submitService}>
+                <input name="full_name" onChange={handleServiceChange} placeholder="Full Name" className="w-full border p-3 rounded" required />
+                <input name="phone_number" onChange={handleServiceChange} placeholder="Phone" className="w-full border p-3 rounded" required />
+                <input name="email" onChange={handleServiceChange} placeholder="Email" className="w-full border p-3 rounded" />
+                <textarea name="service_requirements" onChange={handleServiceChange} placeholder="Requirement" className="w-full border p-3 rounded" required />
+                <button className="w-full bg-blue-600 text-white py-3 rounded">
+                  {loading ? "Submitting..." : "Submit"}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* PRODUCT MODAL */}
-      {showProduct && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowProduct(false)}>
-          <div className="bg-white p-8 rounded-xl max-w-md w-full" onClick={e => e.stopPropagation()}>
-            <h2 className="text-xl font-bold mb-4">Sell Product</h2>
-
-            <form className="space-y-4" onSubmit={submitProduct}>
-              <input name="name" onChange={handleProductChange} placeholder="Name" className="w-full border p-3 rounded" required />
-              <textarea name="address" onChange={handleProductChange} placeholder="Address" className="w-full border p-3 rounded" required />
-              <input name="product_name" onChange={handleProductChange} placeholder="Product Name" className="w-full border p-3 rounded" required />
-              <input name="price" onChange={handleProductChange} placeholder="Price" className="w-full border p-3 rounded" required />
-              <textarea name="description" onChange={handleProductChange} placeholder="Description" className="w-full border p-3 rounded" required />
-              <input name="phone_number" onChange={handleProductChange} placeholder="Phone" className="w-full border p-3 rounded" required />
-              <input type="file" multiple onChange={handleImages} className="w-full border p-3 rounded" />
-
-              <button className="w-full bg-blue-600 text-white py-3 rounded">
-                {loading ? "Submitting..." : "Submit Product"}
+      <AnimatePresence>
+        {showProduct && (
+          <motion.div
+            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+            onClick={() => setShowProduct(false)}
+          >
+            <motion.div
+              className="bg-white p-6 md:p-8 rounded-xl max-w-md w-[95%] max-h-[90vh] overflow-y-auto relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button onClick={() => setShowProduct(false)} className="absolute top-4 right-4">
+                <X />
               </button>
-            </form>
-          </div>
-        </div>
-      )}
+
+              <h2 className="text-xl font-bold mb-4 text-center">Sell Product</h2>
+
+              <form className="space-y-4" onSubmit={submitProduct}>
+                <input name="name" onChange={handleProductChange} placeholder="Name" className="w-full border p-3 rounded" required />
+                <textarea name="address" onChange={handleProductChange} placeholder="Address" className="w-full border p-3 rounded" required />
+                <input name="product_name" onChange={handleProductChange} placeholder="Product Name" className="w-full border p-3 rounded" required />
+                <input name="price" onChange={handleProductChange} placeholder="Price" className="w-full border p-3 rounded" required />
+                <textarea name="description" onChange={handleProductChange} placeholder="Description" className="w-full border p-3 rounded" required />
+                <input name="phone_number" onChange={handleProductChange} placeholder="Phone" className="w-full border p-3 rounded" required />
+                <input type="file" multiple onChange={handleImages} className="w-full border p-3 rounded" />
+                <button className="w-full bg-blue-600 text-white py-3 rounded">
+                  {loading ? "Submitting..." : "Submit Product"}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
