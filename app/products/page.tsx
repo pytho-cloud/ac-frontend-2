@@ -22,12 +22,13 @@ export default function ProductsPage() {
   const [acType, setAcType] = useState("")
   const [loading, setLoading] = useState(true)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-
+  const API_BASE_URL = "https://api.cooltechservice.net";
   const [showFilters, setShowFilters] = useState(false)
 
   // Load filters
+  // Load filters
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/ac-filter-list/")
+    fetch(`${API_BASE_URL}/api/ac-filter-list/`)
       .then(res => res.json())
       .then(data => setFilters(data))
       .catch(console.error)
@@ -43,7 +44,7 @@ export default function ProductsPage() {
 
     setLoading(true)
 
-    fetch(`http://127.0.0.1:8000/api/products-acs/?${params}`)
+    fetch(`${API_BASE_URL}/api/products-acs/?${params}`)
       .then(res => res.json())
       .then(data => {
         setTimeout(() => {
@@ -148,7 +149,7 @@ export default function ProductsPage() {
                   className="bg-white p-4 rounded-xl shadow hover:shadow-lg cursor-pointer transition hover:-translate-y-1"
                 >
                   <img
-                    src={`http://127.0.0.1:8000/${p.image}`}
+                    src={`https://api.cooltechservice.net/${p.image}`}
                     alt={p.model_name}
                     className="w-full h-48 object-cover rounded"
                   />

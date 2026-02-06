@@ -90,7 +90,7 @@ export default function Navbar() {
 
             <Link href="/" className="flex flex-col items-center ">
             <img
-              src="/logo.png"
+              src="/logoo.jpg"
               alt="CTS Logo"
               className="w-auto h-12 md:h-14 "
               style={{ filter: 'drop-shadow(0 0 2px white)' }}

@@ -30,7 +30,10 @@ export default function HomeProducts() {
 
     const callHomeProducts = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/acs/");
+            const API_BASE_URL = "https://api.cooltechservice.net";
+
+            const response = await fetch(`${API_BASE_URL}/api/acs/`);
+
             const result: HomeProductsResponse = await response.json();
 
             setNew(result.data_new);
@@ -67,7 +70,7 @@ export default function HomeProducts() {
                             className="bg-blue-50 rounded-2xl p-5 shadow hover:shadow-xl transition hover:-translate-y-2"
                         >
                             <img
-                            src={product.image}  // now this is full URL like http://127.0.0.1:8000/media/ac/ac1.jpg
+                            src={product.image}  // now this is full URL like http://13.126.245.180/media/ac/ac1.jpg
                             alt={product.model_name}
                             className="mx-auto w-60 h-60 object-contain rounded-xl"
                             />
@@ -82,7 +85,7 @@ export default function HomeProducts() {
 
                             <div className="mt-4 flex gap-3">
                                 <a
-                                    href="tel:+919999999999"
+                                    href="tel:+919702556529"
                                     className="w-1/2 bg-blue-600 text-white py-2 rounded-xl text-sm text-center"
                                 >
                                     Call
@@ -91,17 +94,17 @@ export default function HomeProducts() {
                                 {/* Desktop hover */}
                                 <span className="hidden md:block absolute -top-10 left-1/2 -translate-x-1/2
                                     bg-black text-white text-xs px-3 py-1 rounded-lg">
-                                    +91 99999 99999
+                                    +91 9702556529
                                 </span>
 
                                 {/* Mobile always visible */}
-                                <span className="block md:hidden mt-1 text-xs text-blue-700">
+                                {/* <span className="block md:hidden mt-1 text-xs text-blue-700">
                                     +91 99999 99999
-                                </span>
+                                </span> */}
 
 
                                 <a
-                                    href={`https://wa.me/919999999999?text=Hi, I am interested in ${product.brand} ${product.model_name}`}
+                                    href={`https://wa.me/919702556529?text=Hi, I am interested in ${product.brand} ${product.model_name}`}
                                     target="_blank"
                                     className="w-1/2 bg-green-600 text-white py-2 rounded-xl text-sm text-center"
                                 >

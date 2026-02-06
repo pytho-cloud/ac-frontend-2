@@ -7,7 +7,7 @@ export interface Product {
     id: number;
     brand: string;
     model_name: string;
-    image: string; // full URL like http://127.0.0.1:8000/media/ac/ac1.jpg
+    image: string; // full URL like http://13.126.245.180/media/ac/ac1.jpg
     price?: number;
 }
 
@@ -20,7 +20,10 @@ export default function HomeProduct2() {
 
     const callRefurbishedProducts = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/acs/");
+            const API_BASE_URL = "https://api.cooltechservice.net";
+
+            const response = await fetch(`${API_BASE_URL}/api/acs/`);
+
             const result: HomeProductsResponse = await response.json();
 
             setRefurbished(result.data_refurbish);
@@ -60,21 +63,21 @@ export default function HomeProduct2() {
                                 {product.brand} {product.model_name}
                             </h3>
 
-                            {product.price && (
+                            {/* {product.price && (
                                 <p className="text-green-700 font-bold mt-2">
                                     ₹{product.price}
                                 </p>
-                            )}
+                            )} */}
 
                             <div className="mt-4 flex gap-3">
                                 <a
-                                    href="tel:+919999999999"
+                                    href="tel:+919702556529"
                                     className="w-1/2 bg-blue-600 text-white py-2 rounded-xl text-sm text-center"
                                 >
                                     Call
                                 </a>
                                 <a
-                                    href={`https://wa.me/919999999999?text=Hi, I am interested in ${product.brand} ${product.model_name}`}
+                                    href={`https://wa.me/919702556529?text=Hi, I am interested in ${product.brand} ${product.model_name}`}
                                     target="_blank"
                                     className="w-1/2 bg-green-600 text-white py-2 rounded-xl text-sm text-center"
                                 >

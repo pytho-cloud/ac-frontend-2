@@ -1,19 +1,10 @@
-// /** @type {import('next').NextConfig} */
-// const nextConfig = {
-//   images: {
-//     domains: ["127.0.0.1"], // your backend domain without http://
-//   },
-// };
-
-// module.exports = nextConfig;
-
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
+  output: "export", // ✅ required for S3 static export
   images: {
-    unoptimized: true,
-    domains: ["127.0.0.1", "localhost"], // allow backend images
+    unoptimized: true, // ✅ disable server-side image optimization
+    domains: ["13.126.245.180"], // use your backend server
   },
 };
 

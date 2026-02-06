@@ -35,8 +35,11 @@ export default function Testimonials() {
 
   // Fetch reviews from backend
   const fetchReviews = async () => {
+
+  const API_BASE_URL = "https://api.cooltechservice.net";
+
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/reviews/")
+      const res = await fetch(`${API_BASE_URL}/api/reviews/`)
       const data = await res.json()
       if (data.status === 200) {
         setReviews(data.data)
@@ -68,7 +71,7 @@ export default function Testimonials() {
     if (form.image) formData.append("image", form.image)
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/reviews/", {
+      const res = await fetch("http://api.cooltechservice.net/api/reviews/", {
         method: "POST",
         body: formData,
       })
@@ -99,7 +102,7 @@ export default function Testimonials() {
           <div className="mt-10 bg-blue-50 p-8 rounded-xl shadow">
             {reviews[index].image && (
               <img
-                src={`http://127.0.0.1:8000/${reviews[index].image}`}
+                src={`http://api.cooltechservice.net/${reviews[index].image}`}
                 alt={reviews[index].name}
                 className="mx-auto w-24 h-24 rounded-full mb-4 object-cover"
               />
@@ -147,7 +150,7 @@ export default function Testimonials() {
               Submit Review
             </h3>
 
-            <input
+            {/* <input
               placeholder="Your Name"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -159,7 +162,7 @@ export default function Testimonials() {
               value={form.product_name}
               onChange={(e) => setForm({ ...form, product_name: e.target.value })}
               className="w-full mb-3 px-3 py-2 border rounded"
-            />
+            /> */}
 
             <textarea
               placeholder="Your Review"
@@ -181,14 +184,12 @@ export default function Testimonials() {
               <option value="5">⭐ 5</option>
             </select>
 
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) =>
-                setForm({ ...form, image: e.target.files?.[0] || null })
-              }
-              className="w-full mb-4"
-            />
+              <img
+                src={`https://api.cooltechservice.net/${reviews[index].image}`}
+                alt={reviews[index].name}
+                className="mx-auto w-24 h-24 rounded-full mb-4 object-cover"
+              />
+
 
             <div className="flex gap-3">
               <button

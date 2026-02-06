@@ -4,6 +4,9 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 
 export default function ContactForm() {
+
+  const API_BASE_URL = "https://api.cooltechservice.net";
+
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -24,7 +27,7 @@ export default function ContactForm() {
         setSuccess("")
 
         try {
-            const res = await fetch("http://127.0.0.1:8000/api/contact/", {
+            const res = await fetch(`${API_BASE_URL}/api/contact/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)

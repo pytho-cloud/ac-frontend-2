@@ -45,7 +45,7 @@ export default function ProductSinglePage({ product, onBack }: Props) {
 
   return (
     <section className="py-20 bg-gray-50">
-      <Loading />
+      {/* <Loading /> */}
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12">
 
         {/* IMAGE SLIDER */}
@@ -54,7 +54,7 @@ export default function ProductSinglePage({ product, onBack }: Props) {
             <>
               <div className="relative">
                 <img
-                  src={`http://localhost:8000${images[current]}`}
+                  src={`https://api.cooltechservice.net/${images[current]}`}
                   alt={product.model_name}
                   className="w-full h-72 object-cover rounded-xl"
                 />
@@ -84,7 +84,7 @@ export default function ProductSinglePage({ product, onBack }: Props) {
                   {images.map((img, index) => (
                     <img
                       key={index}
-                      src={`http://localhost:8000${img}`}
+                      src={`https://api.cooltechservice.net/${img}`}
                       onClick={() => setCurrent(index)}
                       className={`w-16 h-16 object-cover rounded cursor-pointer border-2 transition
                         ${
@@ -126,14 +126,14 @@ export default function ProductSinglePage({ product, onBack }: Props) {
 
           <div className="flex gap-4 mt-6">
             <a
-              href="tel:+919876543210"
+              href="tel:+919702556529"
               className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-500 transition"
             >
               📞 Call
             </a>
 
             <a
-              href="https://wa.me/9167208204?text=Hi%20I%20am%20interested%20in%20your%20AC"
+              href="https://wa.me/9702556529?text=Hi%20I%20am%20interested%20in%20your%20AC"
               target="_blank"
               className="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-500 transition"
             >

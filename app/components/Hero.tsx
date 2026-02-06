@@ -15,12 +15,6 @@ const words = [
 export default function Hero() {
   const router = useRouter();
 
-  const heroImages = [
-    "/hero/hero1.jpg",
-    "/hero/hero2.jpg",
-    "/hero/hero3.jpg",
-  ];
-
   /* typing animation */
   const [text, setText] = useState("");
   const [wordIndex, setWordIndex] = useState(0);
@@ -49,16 +43,7 @@ export default function Hero() {
   });
 
   const [images, setImages] = useState<File[]>([]);
-
-  /* background slider */
-  const [bgIndex, setBgIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setBgIndex((prev) => (prev + 1) % heroImages.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+  const API_BASE_URL = "https://api.cooltechservice.net/";
 
   /* typing effect */
   useEffect(() => {
@@ -99,7 +84,9 @@ export default function Hero() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/post-enquiry/", {
+  const API_BASE_URL = "https://api.cooltechservice.net";
+
+      const res = await fetch(`${API_BASE_URL}/api/post-enquiry/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(serviceData),
@@ -126,7 +113,7 @@ export default function Hero() {
     images.forEach(img => fd.append("images", img));
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/product-sell-create/", {
+      const res = await fetch(`${API_BASE_URL}/api/product-sell-create/`, {
         method: "POST",
         body: fd,
       });
@@ -145,36 +132,40 @@ export default function Hero() {
   return (
     <>
       {/* HERO SECTION */}
-      <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
+      <section
+        id="home"
+        className="relative min-h-screen flex items-center overflow-hidden"
+      >
+        {/* BACKGROUND IMAGE */}
         <div className="absolute inset-0 z-0">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={bgIndex}
-              src={heroImages[bgIndex]}
-              className="w-full h-full object-cover"
-              initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.05 }}
-              transition={{ duration: 1 }}
-            />
-          </AnimatePresence>
-          <div className="absolute inset-0 bg-black/50" />
+          <motion.img
+            src="/hero/hero1.png"
+            className="w-full h-full object-cover"
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1 }}
+          />
+
+          {/* LIGHT OVERLAY (NOT DARK) */}
+          <div className="absolute inset-0 bg-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h1 className="text-3xl md:text-5xl font-extrabold text-white">
+        {/* CONTENT */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-10 items-center">
+          <div className="text-center md:text-left">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight">
               Stay Cool & Comfortable <br />
-              <span className="text-blue-400">
-                {text}<span className="animate-pulse">|</span>
+              <span className="text-blue-300">
+                {text}
+                <span className="animate-pulse">|</span>
               </span>
             </h1>
 
-            <p className="mt-6 text-lg text-blue-100">
+            <p className="mt-5 text-base sm:text-lg text-blue-100">
               Professional AC installation, repair and services.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <button
                 onClick={() => setShowService(true)}
                 className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:scale-105 transition"
@@ -184,7 +175,7 @@ export default function Hero() {
 
               <button
                 onClick={() => setShowProduct(true)}
-                className="border-2 border-blue-400 text-blue-400 px-6 py-3 rounded-xl hover:bg-blue-600 hover:text-white transition"
+                className="border-2 border-blue-300 text-blue-300 px-6 py-3 rounded-xl hover:bg-blue-600 hover:text-white transition"
               >
                 Sell Product
               </button>
@@ -192,9 +183,11 @@ export default function Hero() {
           </div>
 
           <img
-            src="/logo.png"
-            className="w-full max-w-md mx-auto hover:scale-110 transition"
+            src="/hero/herologo.png"
+            className="w-32 sm:w-40 md:w-44 mx-auto opacity-90 hover:scale-105 transition"
+            alt="Logo"
           />
+
         </div>
       </section>
 
@@ -202,14 +195,14 @@ export default function Hero() {
       <AnimatePresence>
         {showService && (
           <motion.div
-            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-3"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowService(false)}
           >
             <motion.div
-              className="bg-white p-6 md:p-8 rounded-xl max-w-md w-[95%] max-h-[90vh] overflow-y-auto relative"
+              className="bg-white p-6 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto relative"
               initial={{ scale: 0.9, opacity: 0, y: 30 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 30 }}
@@ -239,11 +232,11 @@ export default function Hero() {
       <AnimatePresence>
         {showProduct && (
           <motion.div
-            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-3"
             onClick={() => setShowProduct(false)}
           >
             <motion.div
-              className="bg-white p-6 md:p-8 rounded-xl max-w-md w-[95%] max-h-[90vh] overflow-y-auto relative"
+              className="bg-white p-6 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto relative"
               onClick={(e) => e.stopPropagation()}
             >
               <button onClick={() => setShowProduct(false)} className="absolute top-4 right-4">

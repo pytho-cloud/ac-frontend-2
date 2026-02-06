@@ -20,9 +20,12 @@ type Service = {
 
 export default function Services() {
   const [services, setServices] = useState<Service[]>([])
+  const API_BASE_URL = "https://api.cooltechservice.net";
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/get-maintainence/")
+   
+
+    fetch(`${API_BASE_URL}/api/get-maintainence/`)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Failed to fetch")

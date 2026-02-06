@@ -10,8 +10,8 @@ type Point = {
 export default function WhyChooseUs() {
     const points: Point[] = [
         {
-            title: 'Certified AC Technicians',
-            description: 'Our team consists of trained and certified professionals with years of hands-on experience.',
+        title: 'Quick Response Service',
+        description: 'We respond fast and get your AC issues resolved without unnecessary delays.'
         },
         {
             title: 'Same Day Service',
